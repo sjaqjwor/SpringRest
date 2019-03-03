@@ -2,6 +2,7 @@ package me.seungki.demoinflearnrestapi.events;
 
 import lombok.*;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Builder
@@ -10,8 +11,10 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @EqualsAndHashCode(of="id")
+@Entity
 public class Event {
 
+    @Id @GeneratedValue
     private Integer id;
     private String name;
     private String description;
@@ -23,6 +26,8 @@ public class Event {
     private int basePrice;
     private int maxPrice;
     private int limitOfEnrollment;
+    //ordinal 은 enum의 순서값을 저장한다.
+    @Enumerated(EnumType.STRING)
     private EventStatus eventStatus;
 
 }

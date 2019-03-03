@@ -4,9 +4,12 @@ package me.seungki.demoinflearnrestapi.events;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -15,6 +18,8 @@ import java.time.LocalDateTime;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -22,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 //web과 관련된 빈들이 등록이 된다.
 //단위 테스트라고 보기에는 많은것들이 포함되어 있다.
+//repository는 빈으로 등록x
 @WebMvcTest
 public class EventControllerTests {
 
@@ -32,6 +38,10 @@ public class EventControllerTests {
 
     @Autowired
     ObjectMapper objectMapper;
+
+    //mock bean이기에 데이터베이스에 값을 저장하더라도 리턴되는 값은 null이다.
+    @MockBean
+    EventRepository eventRepository;
 
     @Test
     public void createEvent() throws Exception{
@@ -47,7 +57,9 @@ public class EventControllerTests {
                 .limitOfEnrollment(100)
                 .location("d2")
                 .build();
+        event.setId(10);
 
+        Mockito.when(eventRepository.save(event)).thenReturn(event);
 
         mockMvc.perform(post("/api/events/")
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -55,7 +67,9 @@ public class EventControllerTests {
                     .content(objectMapper.writeValueAsString(event)))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("id").exists());
+                .andExpect(jsonPath("id").exists())
+                .andExpect(header().exists(HttpHeaders.LOCATION))
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE,MediaTypes.HAL_JSON_UTF8_VALUE));
 
 
     }

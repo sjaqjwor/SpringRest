@@ -1,6 +1,7 @@
 package me.seungki.demoinflearnrestapi.events;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +21,17 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 //procedure은 해당 컨트롤러에 있는 응답은 hal로 보내겠다는 의미
 public class EventController {
 
+    private final EventRepository eventRepository;
+
+    public EventController(EventRepository eventRepository){
+        this.eventRepository=eventRepository;
+    }
 
     @PostMapping
     public ResponseEntity createEvent(@RequestBody Event event){
-        URI createUrl = linkTo(EventController.class).slash("{id}").toUri();
-        event.setId(10);
+        Event newEvent =  this.eventRepository.save(event);
+        URI createUrl = linkTo(EventController.class).slash(newEvent.getId()).toUri();
         return ResponseEntity.created(createUrl).body(event);
     }
 }
+
