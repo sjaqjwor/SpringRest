@@ -2,15 +2,13 @@ package me.seungki.demoinflearnrestapi.events;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import me.seungki.demoinflearnrestapi.common.TestDescription;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,14 +16,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
-import java.util.Vector;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 
@@ -51,8 +45,9 @@ public class EventControllerTests {
 //    EventRepository eventRepository;
 
     @Test
+    @TestDescription("정상적으로 이번트를 생성하는 테스트")
     public void createEvent() throws Exception{
-        Event event = Event.builder()
+        EventDto event = EventDto.builder()
 
                 .name("Spring")
                 .description("Rest Api Developement with Spring")
@@ -85,6 +80,7 @@ public class EventControllerTests {
     }
 
     @Test
+    @TestDescription("입력 받을 수 없는 값을 사용하는 경우 에러 발생")
     public void createEven_badRequestt() throws Exception{
           Event event = Event.builder()
                 .id(100)
@@ -114,6 +110,7 @@ public class EventControllerTests {
     }
 
     @Test
+    @TestDescription("입력 값이 비어있는 경우 에러 발생")
     public void creatEvent_BadRequest_empty_Input() throws Exception{
         EventDto eventDto = EventDto.builder().build();
         this.mockMvc.perform(post("/api/events")
@@ -123,6 +120,7 @@ public class EventControllerTests {
     }
 
     @Test
+    @TestDescription("입력 값이 잘못 된 경우")
     public void creatEvent_BadRequest_wrong_Input() throws Exception{
         EventDto eventDto = EventDto.builder()
                 .name("Spring")
