@@ -86,5 +86,34 @@ public class EventControllerTests {
 
     }
 
+    @Test
+    public void createEven_badRequestt() throws Exception{
+          Event event = Event.builder()
+                .id(100)
+                .name("Spring")
+                .description("Rest Api Developement with Spring")
+                .beginEnrollmentDateTime(LocalDateTime.of(2018,11,12,13,22))
+                .closeEnrollmentDateTime(LocalDateTime.of(2018,11,13,13,22))
+                .beginEventDateTime(LocalDateTime.of(2018,11,25,14,22))
+                .endEventDateTime(LocalDateTime.of(2018,11,26,14,21))
+                .basePrice(100)
+                .maxPrice(200)
+                .limitOfEnrollment(100)
+                .location("d2")
+                .free(true)
+                .offline(true)
+                .eventStatus(EventStatus.PUBLISHED)
+                .build();
+
+
+        mockMvc.perform(post("/api/events/")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaTypes.HAL_JSON)
+                .content(objectMapper.writeValueAsString(event)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
+    }
+
 
 }
