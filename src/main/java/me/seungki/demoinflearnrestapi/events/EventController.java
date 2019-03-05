@@ -2,6 +2,7 @@ package me.seungki.demoinflearnrestapi.events;
 
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.internal.Errors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 
@@ -31,8 +33,14 @@ public class EventController {
         this.modelMapper=modelMapper;
     }
 
+
+    //@valid
+    // binding 될떄 검증 수행 할 수 있다.
     @PostMapping
-    public ResponseEntity createEvent(@RequestBody EventDto eventDto){
+    public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, Errors errors){
+        if(errors.hasErrors()){
+            return ResponseEntity.badRequest().build();
+        }
         Event event = modelMapper.map(eventDto,Event.class);
         Event newEvent =  this.eventRepository.save(event);
         URI createUrl = linkTo(EventController.class).slash(newEvent.getId()).toUri();
