@@ -49,7 +49,10 @@ public class EventController {
         eventValidator.validate(eventDto,errors);
 
         if(errors.hasErrors()){
-            return ResponseEntity.badRequest().build();
+            //errors는 시리얼라이즈가 안된다.
+            //errors는 자바 빈 스팩을 고려하지 않은 클래스다
+            //그렇기에 바디에 넣어서 errors을 전달하면 안된다.
+            return ResponseEntity.badRequest().body(errors);
         }
 
         Event event = modelMapper.map(eventDto,Event.class);
